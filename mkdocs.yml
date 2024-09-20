@@ -4,8 +4,19 @@ theme:
   name: material
   favicon: common/img/logo.png
   logo: common/img/logo.png
+  palette: 
+    primary: white
+extra:
+  social:
+    - icon: fontawesome/brands/github
+      link: https://github.com/pitayapj
+markdown_extensions:
+  - admonition
+  - pymdownx.details
+  - pymdownx.superfences
+
 nav:
   - Home: index.md
-  - Devops: index.md
+  - Devops: devops/index.md
   - Serverless:
-    - Building an application in IAM Identity Center(SSO): serverless/application-in-iamic.md
+    - Building an application in IAM Identity Center(SSO): serverless/app-in-iamic/application-in-iamic.md

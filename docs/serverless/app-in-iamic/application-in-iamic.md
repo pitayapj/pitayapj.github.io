@@ -16,6 +16,11 @@ So automatically on at daylight is not even feasible anymore.
 If only we have a button that can turn on/off infrastructure when we like...
 
 ### IAM Identity Center
-Beside being a place to centralize your AWS Accounts' access. IAM Identity Center have option for your customize app. So why don't we leverage it and create a web app that has bunch of button for manual on/off infrastructures.
+Beside being a place to centralize your AWS Accounts' access. IAM Identity Center have option for your customize app. 
 
-Since users can only access our app via IAM Identity Center portal, we don't have to worry this site is public accessible.
+Since users can only access our app via IAM Identity Center portal, we don't have to worry that the site is public accessible.
+
+So why don't we leverage it and let's create a web app that has bunch of buttons for manual on/off infrastructures.
+
+### System Design
+![AWSDiagram](iamic-app-design.png)

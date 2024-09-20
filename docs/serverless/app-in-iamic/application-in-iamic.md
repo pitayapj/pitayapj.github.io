@@ -24,3 +24,13 @@ So why don't we leverage it and let's create a web app that has bunch of buttons
 
 ### System Design
 ![AWSDiagram](iamic-app-design.png)
+
+!!! warning inline end "AWS Pre-config App parameters"
+    
+    Remember to include your backend URL to Content-Security-Policy in *HttpHeaders* parameter!
+    It's also recommend that you prepared your frontend bucket and Cloudfront OAI to access it so you can put their information in app's parameter.
+    To sum up, you should put following parameters: HttpHeaders, OriginAccessIdentity, SignOutUrl and S3OriginDomainName
+
+Of course my lazy ass will try to avoid backend code as much as possible. So I will be using [AWS Pre-config Authentication App](https://console.aws.amazon.com/lambda/home?region=us-east-1#/create/app?applicationId=arn:aws:serverlessrepo:us-east-1:520945424137:applications/cloudfront-authorization-at-edge).
+
+The app will cloudfront distribution, user pool and authentication process for us. 

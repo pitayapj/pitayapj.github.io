@@ -22,13 +22,14 @@ Since users can only access our app via IAM Identity Center portal, we don't hav
 
 So why don't we leverage it and let's create a web app that has bunch of buttons for manual on/off infrastructures.
 
-### System Design
+## System Implementation
+### Design
 ![AWSDiagram](iamic-app-design.png)
 
-!!! warning inline end "AWS Pre-config App parameters"
+??? warning inline end "AWS Pre-config App parameters"
     
     Remember to include your backend URL to Content-Security-Policy in **HttpHeaders** parameter!
-    It's also recommend that you prepared your frontend bucket and Cloudfront OAI to access it so you can put their information in app's parameter.
+    I also recommend that you prepared your frontend bucket and Cloudfront OAI to access it so you can put their information in the app' parameters.
     
     To sum up, you should put following parameters: **HttpHeaders**, **OriginAccessIdentity**, **SignOutUrl** and **S3OriginDomainName**.
 
@@ -37,3 +38,12 @@ Of course my lazy ass will try to avoid backend code as much as possible. So I w
 The app will cloudfront distribution, user pool and lambda function that handles authentication process for us. 
 
 The app resides in us-east-1. Change to your region before creating the app.
+
+- Other components:
+    * IAM Identity Center: our IDP and where we will setup our custom app.
+    * Frontend bucket: serve React's SPA statically.
+    * Backend API Gateway: API front for our backend function, user must authenticated with Cognito, receive token and using that when requesting to our API.
+    * Backend Function: handle request accordingly. For now I only have 2 functions, read all infra status and change status to on/off of 1 infra environment.
+    * Status DynamoDB: database storing status of each infra environment.
+    * DynamoDB stream: streaming whenever there is a change in one of our records. Trigger data processing lambda function.
+    * Event Publisher Function: receive data from dynamoDB stream and publish a SNS topic with attribute

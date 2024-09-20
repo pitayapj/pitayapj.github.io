@@ -16,7 +16,7 @@ markdown_extensions:
   - pymdownx.superfences
   - attr_list
   - md_in_html
-
+  - def_list
 nav:
   - Home: index.md
   - Devops: devops/index.md

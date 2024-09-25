@@ -83,6 +83,6 @@ You can say our system is basically free.
 - Using Cognito with SAML will be free as long as you keep the number of users below 50.
 - You do have to pay for route53 host zone. $0.50 per month. 
 - Codebuild (in sateline accounts) On-demand might be the most expensive thing ($0.00425 per min). Assuming every time CodeBuild run will take 5 minutes. Monthly total will be $0.00425 * 5 * 150 = $3.1875
-- Total cost: $0.50 + $3.1875 = $3.6875
+- **Total cost**: $0.50 + $3.1875 = $3.6875 (monthly)
 
 ## Summary

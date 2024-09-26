@@ -16,4 +16,4 @@ But along that, I think this website can also be a perfect place for me to show 
 ??? note "Disclaimer"
     Like I said, the website is a note for myself. I might left some information out so please read with careful consideration. 
 
-    Love to have your feedbacks still/ :smile:
+    Love to have your feedbacks still. :smile:

@@ -18,6 +18,6 @@ But influenced by Derek, I think this website can also be a perfect place for me
 <h2>So, let's get on to it, shall we!! </h2>
 
 ??? note "Disclaimer"
-    Like I said, the website is a note for myself. I might left some information out so please read with careful consideration. 
+    Like I said, the website is a note for myself. I might leave some information out, or outright missing some, so please read with careful consideration. 
 
-    Still, Love to have you here. Feedbacks are always appreciated. :smile:
+    Still, love to have you here. Feedbacks are always appreciated. :smile:

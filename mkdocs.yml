@@ -35,8 +35,12 @@ markdown_extensions:
 extra_css:
   - common/stylesheets/extra.css
 
+plugins:
+  - git-revision-date-localized:
+      enable_creation_date: true
+
 nav:
   - Home: index.md
   - Devops: devops/index.md
   - Serverless:
-    - Building an application in IAM Identity Center(SSO): serverless/app-in-iamic/application-in-iamic.md
+    - Building an application in IAM Identity Center(SSO): serverless/app-in-iamic/index.md

@@ -41,6 +41,7 @@ plugins:
 
 nav:
   - Home: index.md
-  - Devops: devops/index.md
+  - Devops: 
+    - ECS and EKS: devops/about-devops/index.md
   - Serverless:
     - Building an application in IAM Identity Center(SSO): serverless/app-in-iamic/index.md

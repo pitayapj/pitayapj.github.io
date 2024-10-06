@@ -38,10 +38,13 @@ extra_css:
 plugins:
   - git-revision-date-localized:
       enable_creation_date: true
+  - tags:
+      tags_file: tags/tags.md
 
 nav:
   - Home: index.md
   - Devops: 
-    - ECS and EKS: devops/about-devops/index.md
+    - About Devops: devops/about-devops/index.md
   - Serverless:
     - Building an application in IAM Identity Center(SSO): serverless/app-in-iamic/index.md
+  - Tags: tags/tags.md

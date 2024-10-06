@@ -1,3 +1,10 @@
+---
+tags:
+  - AWS
+  - Serverless
+  - Cognito
+---
+
 # Building an application in IAM Identity Center
 
 ## Introduction

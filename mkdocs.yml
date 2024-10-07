@@ -36,6 +36,7 @@ extra_css:
   - common/stylesheets/extra.css
 
 plugins:
+  - search
   - git-revision-date-localized:
       enable_creation_date: true
   - tags:
@@ -52,4 +53,3 @@ nav:
       - Convert Vietnam license(B2) to Japanese license(普通車): misc/driving/convert-license/convert-license.md
     - Photography Notes: misc/photography/photography.md
   - Tags: tags/tags.md
-  

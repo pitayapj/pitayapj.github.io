@@ -35,12 +35,21 @@ markdown_extensions:
 extra_css:
   - common/stylesheets/extra.css
 
+plugins:
+  - git-revision-date-localized:
+      enable_creation_date: true
+  - tags:
+      tags_file: tags/tags.md
+
 nav:
   - Home: index.md
-  - Devops: devops/index.md
+  - Devops: 
+    - About Devops: devops/about-devops/index.md
   - Serverless:
-    - Building an application in IAM Identity Center(SSO): serverless/app-in-iamic/application-in-iamic.md
+    - Building an application in IAM Identity Center(SSO): serverless/app-in-iamic/index.md
   - Misc:
     - Driving:
       - Convert Vietnam license(B2) to Japanese license(普通車): misc/driving/convert-license/convert-license.md
     - Photography Notes: misc/photography/photography.md
+  - Tags: tags/tags.md
+  

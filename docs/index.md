@@ -22,4 +22,4 @@ But influenced by Derek, I think this website can also be a perfect place for me
     Still, love to have you here. Feedbacks are always appreciated. :smile:
 
 ### Recent post:
-[Building an application in IAM Identity Center](docs\serverless\app-in-iamic\index.md)
+[Building an application in IAM Identity Center](serverless/app-in-iamic/index.md)

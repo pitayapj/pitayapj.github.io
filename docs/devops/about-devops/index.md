@@ -2,7 +2,11 @@
 
 !!! note "Working In Process"
 
-I still remember chemistry class in highschool, chemical reaction between A and B create C and D. A reaction sometime can only happen if there is presence of a substance X, which is not consumed by the reaction and remain unchanged after. Or catalyst.
+I still remember chemistry class in highschool, chemical reaction between A and B create C and D. 
+
+![thermite](thermite.png)
+
+But a reaction can sometime only happen if there is presence of a substance X, which is not consumed by the reaction and remain unchanged after. Or catalyst.
 
 Catalyst helps reaction occur, react faster or even prevent reverse reaction (C and D turning back to A and B).
 

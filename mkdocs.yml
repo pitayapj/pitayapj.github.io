@@ -2,10 +2,14 @@ site_name: Pitaya Blog
 site_url: https://pitayapj.github.io
 theme:
   name: material
+  custom_dir: overrides
   favicon: common/img/logo.png
   logo: common/img/logo.png
   palette: 
     primary: white
+  features:
+    - navigation.top
+    - announce.dismiss
 extra:
   social:
     - icon: fontawesome/brands/github

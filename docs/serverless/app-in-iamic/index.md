@@ -10,7 +10,7 @@ tags:
 !!! note "All written in code now !"
     Update 2025/11/11, we can integrate AWS Pre-config app in our own CDK so you don't have to manual setting anything in AWS.
 
-    Go to **https://github.com/pitayapj/serverless-private-site** for more detail 
+    **[Private site example](https://github.com/pitayapj/serverless-private-site)**
 
 ## Introduction
 ### Background

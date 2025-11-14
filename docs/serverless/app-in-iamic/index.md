@@ -7,6 +7,11 @@ tags:
 
 # Building an application in IAM Identity Center
 
+!!! note "All written in code now !"
+    Update 2025/11/11, we can integrate AWS Pre-config app in our own CDK so you don't have to manual setting anything in AWS.
+
+    Go to **https://github.com/pitayapj/serverless-private-site** for more detail 
+
 ## Introduction
 ### Background
 Working with AWS for so long, I think its [pillars of well-architect](https://aws.amazon.com/blogs/apn/the-6-pillars-of-the-aws-well-architected-framework/) imprinted into my brain. 
@@ -32,19 +37,13 @@ Let's leverage that and also make sure that only IAM-IC authenticated users can 
 ![AWSDiagram](iamic-app-design.png)
 There will be 2 major parts. One is our application backend and frontend reside in a centralized AWS account. 
 
-Other will be process to turn on/off resources in registered satellite accounts. Which will be different for each, it could be a lambda function calling AWS API to turn on/off resources. Or in my case, since I created our resources with CDK, my process compose of a lambda function, a pipeline that will be trigger by that lambda function and spin up a Codebuild Instance and run command base on input receive from centralized account.(1) 
-{ .annotate }
-
-1.  And if setting up turn on/off process is the same for every satellite accounts. You can create Service Catalog, share with the whole Organization for simplicity.
+Other will be process to turn on/off resources in registered satellite accounts. Which will be different for each, it could be a lambda function calling AWS API to turn on/off resources. Or in my case, since I created our resources with CDK, my process compose of a lambda function, a pipeline that will be trigger by that lambda function and spin up a Codebuild Instance and run command base on input receive from centralized account.
 
 The system will only have 2 extremely simple functions, list all infrastructures along with its status and changing status of one specific infrastructure environment. 
 
-Of course my lazy ass will try to avoid backend code as much as possible. So I will be using [AWS Pre-config Authentication App](https://console.aws.amazon.com/lambda/home?region=us-east-1#/create/app?applicationId=arn:aws:serverlessrepo:us-east-1:520945424137:applications/cloudfront-authorization-at-edge).
+So I will be using [AWS Pre-config Authentication App](https://console.aws.amazon.com/lambda/home?region=us-east-1#/create/app?applicationId=arn:aws:serverlessrepo:us-east-1:520945424137:applications/cloudfront-authorization-at-edge) to do the authentication process.
 
-The Pre-config app will create cloudfront distribution, user pool and lambda function that handles authentication process for us. (1) In addition, we will also need a few more components to handle various task in our system. I explain each component and its purpose below. But I won't go into detail how to set it up.
-{ .annotate } 
-
-1. Change to your prefer region before creating the app. Default is us-east-1.
+The Pre-config app will only create lambda functions that handles authentication process for us. We need to create our own Cloudfront and Cognito User pool
 
 <h4> Additional components for our system: </h4>
 `IAM-IC`
@@ -71,54 +70,14 @@ The Pre-config app will create cloudfront distribution, user pool and lambda fun
 `Change SNS Topic`
 :   Send message to all subscribers in all accounts. Each subscription will have a filtering to check if the message destined to its account then process with appropriate action..
 
+`Cognito User Pool`
+:   Just user pool
+
+`Cloudfront CDN`
+:   Handle traffic, also be the landing for our authentication process Lambda Edge
+
 ### Implement
-#### 1. Setting AWS Pre-config App
-The purpose of AWS Pre-config App is to handle authentication for any content hosting through Cloudfront.
-
-In our case, we want to serve a SPA app in S3 bucket. So there will be a few parameter we need to change when creating the app.
-
-<h5>Parameters in AWS Pre-config App:</h5>
-
-| Parameter        | Value                          | Note|
-| :----------   | :----------------------------------- |:----|
-| `HttpHeaders` | {  "Content-Security-Policy": "default-src 'none'; img-src 'self'; script-src 'self' https://code.jquery.com https://stackpath.bootstrapcdn.com; style-src 'self' 'unsafe-inline' https://stackpath.bootstrapcdn.com; object-src 'none'; connect-src 'self' https://*.amazonaws.com https://*.amazoncognito.com **https://your-backend-url.com**",  "Strict-Transport-Security": "max-age=31536000; includeSubdomains; preload",  "Referrer-Policy": "same-origin",  "X-XSS-Protection": "1; mode=block",  "X-Frame-Options": "DENY",  "X-Content-Type-Options": "nosniff"} | Add backend URL to connect-src part of Content-Security-Policy if URL of your backend and frontend is different. If not set, you will encounter error when calling backend |
-| `OriginAccessIdentity`|  something like EABCDEFGH123  | Create OAI first then include its ID here |
-| `S3OriginDomainName`| **content-bucket-name**.s3.**ap-northeast-1**.amazonaws.com | S3 origin domain will be in format:<br> **bucket-name**.s3.**region**.amazonaws.com |
-| `RedirectPathSignOut`| I set it to/signedout | A page to redirect user when signed out  |
-| `SignOutUrl`| I set it to /signout | Url that when request, it will sign user out  |
-
-#### 2. Other components setup
-Creating other components, we can use [CDK](https://docs.aws.amazon.com/cdk/v2/guide/getting_started.html) and I highly recommend doing it that way.
-But because CDK haven't support changing attribute of imported distribution yet. We need to map a certificate in ACM to Cloudfront Distribution using AWS Console.
-![CloudfrontSetting](cloudfront-setting.png)
-
-We also need make sure Cognito is our Authorizer for API Gateway (this time using CDK):
-``` typescript
-// Import User pool create by AWS Pre-config App
-const userPool = cognito.UserPool.fromUserPoolArn(this, "pre-created-userpool", "arn:aws:cognito-idp:region:accountID:userpool/region_cognitoID");
-
-// Register our Authorizer
-const auth = new apigw.CognitoUserPoolsAuthorizer(this, 'cognito-authorizer', {
-    cognitoUserPools: [userPool],
-    authorizerName: "CognitoAuthorizer"
-});
-
-// Require Authorizer in necessary method
-declare const backendApi: apigateway.LambdaRestApi;
-declare const lambdaIntegrate: apigateway.LambdaIntegration;
-const items = backendApi.root.addResource('path'); //your custom path
-
-items.addMethod(
-    'GET',
-    lambdaIntegrate,
-    {
-        authorizationType: apigateway.AuthorizationType.COGNITO,
-        authorizer: auth
-    }
-);
-```
-
-#### 3. Create IAM-IC custom app
+#### Create IAM-IC custom app
 Now we need to tell Cognito to use IAM-IC as Identity provider and mapping attribute to custom app.
 
 A little bit complicate here so I will note down step by step action (make sure to have 2 tabs open, 1 for IAM-IC and 1 for Cognito User pool)
@@ -127,39 +86,35 @@ A little bit complicate here so I will note down step by step action (make sure 
     * Choose I have an application I want to set up, Application type is SAML 2.0. Hit next.
     * Put Display name and Description. Do **NOT** hit submit.
     * Copy IAM Identity Center SAML metadata file URL.
-2. In Cognito, open Sign-in experience tab. 
-    * In Federated identity provider sign-in, click Add identity provider.
-    * Choose SAML.
-    * Provide a name for identity provider. Ex: IAMICProvider.
-    * In Metadata document source, choose Enter metadata document endpoint URL and paste SAML metadata file URL in step 1 here.
-    * Click Add identity provider.
-3. Move to App Integration tab.
-    * Scroll down to App clients and analytics and click to the app that created in there (Name format: UserPoolClient-*random string*).
-    * Scroll to Hosted UI, click Edit.
-    * Not sure what was the default value, so I will list everything here. Change to following value:
 
-    | Parameter        | Value                          | 
-    | :----------   | :----------------------------------- |
-    | `Allowed callback URLs` | *https://your-frontend-url.com*/parseauth |
-    | `Allowed sign-out URLs`|   *https://your-frontend-url.com*/signout  |
-    | `Identity providers`| Identity provider created in step 2. Ex: IAMICProvider | 
-    | `OAuth 2.0 grant types`| Authorization code grant |
-    | `OpenID Connect scopes`| Select everything |
+2. Prepare other necessary parameter to deploy CDK app (reference　.env.example)
+    You need a repository in github for cdk app and established Github and Codestar connection
+    
+    Along with choosing region and AWS account to deploy, edit said repo name and connection arn in .env file
+    
+    Choose which environment to deploy or not deploy by commenting lib/stacks/cdk-pipeline.ts line 106-115
 
-4. Go back to user pool and in App integration tab.
-    * Copy Cognito domain.
-    * Append **/saml2/idpresponse** to the domain URL. The result will be look something like:<br>
-    ==https://*cognito-custom-hash*.auth.*region*.amazoncognito.com**/saml2/idpresponse**==
-    * Go to IAM-IC tab and paste above value to Application ACS URL
-5. Go back to Cognito tab, copy User pool ID (ex: **region_abcdEFGH**)
+    Deploy CDK app with 
+    ```sh
+    cdk deploy CDKPipelineStack --profile pitaya
+    ```
+
+3. Retrieve information from Cognito and paste to IAM-IC app
+    * Enter your [https://your-frontend-url.com](https://your-frontend-url.com) to Application start URL.
+
     * Append `urn:amazon:cognito:sp:` before User pool ID so we have a string like: <br>
     ==urn:amazon:cognito:sp:**region_abcdEFGH**==
     * Paste it to Application SAML audience in IAC-IC tab.
-6. I promise this will be the last settings :sweat_smile:
-    * Go back to IAC-IC tab.
-    * Enter your [https://your-frontend-url.com](https://your-frontend-url.com) to Application start URL.
-    * Submit the app.
-    * After submit the app, go to its detail setting.
+
+    * Append `/saml2/idpresponse` to last part of Cognito DomainUrl so we will have something like this <br>
+    https://&lt;customize-sub-domain&gt;.auth.region.amazoncognito.com/saml2/idpresponse
+
+    * Paste it to ACS URL in IAC-IC tab.
+
+    * Click create app
+
+4. Mapping attributes
+    * Go to its detail setting.
     * Click Actions -> Edit attribute mappings.
 
     | Parameter        | Value                          | 

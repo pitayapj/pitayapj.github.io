@@ -1,3 +1,8 @@
+---
+hide:
+ - toc
+---
+
 ## Hi :wave_tone2:{ .wave }
 YouTube! What is behind its fast loading and adblock-prevention function.
 
